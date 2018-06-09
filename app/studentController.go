@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
+	"github.com/VividCortex/mysqlerr"
 )
 
 var db = db_init()
@@ -64,7 +66,16 @@ func CreateStudent(context *gin.Context) {
 	defer stmt.Close()
 
 	status, err := stmt.Exec(number, name, department)
-	checkError(err)
+	if driverErr, ok := err.(*mysql.MySQLError); ok {
+		if driverErr.Number == mysqlerr.ER_NO_REFERENCED_ROW_2 {
+			context.JSON(http.StatusBadRequest, gin.H{
+				"status": "failed",
+				"new_id": nil,
+				"message": fmt.Sprintf("Invalid department id: %s", department),
+			})
+			return
+		}
+	}
 
 	insertId, err := status.LastInsertId()
 	checkError(err)
@@ -113,7 +124,7 @@ func UpdateStudent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"status": "failed",
 			"message": "Validation failed",
-			"new_id": nil,
+			"updated_id": nil,
 		})
 		return
 	}
@@ -123,7 +134,17 @@ func UpdateStudent(context *gin.Context) {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(number, name, departmentId, id)
-	checkError(err)
+	if driverErr, ok := err.(*mysql.MySQLError); ok {  // How can it be this ?
+		//fmt.Println(driverErr.Number, ok)
+		if driverErr.Number == mysqlerr.ER_NO_REFERENCED_ROW_2 {
+			context.JSON(http.StatusBadRequest, gin.H{
+				"status": "failed",
+				"updated_id": nil,
+				"message": fmt.Sprintf("Invalid department id: %s", departmentId),
+			})
+			return
+		}
+	}
 
 	context.JSON(http.StatusOK, gin.H{
 		"status": "ok",
