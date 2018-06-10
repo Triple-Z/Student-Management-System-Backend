@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/VividCortex/mysqlerr"
+	"log"
 )
 
 var db = db_init()
@@ -73,6 +74,9 @@ func CreateStudent(context *gin.Context) {
 				"new_id": nil,
 				"message": fmt.Sprintf("Invalid department id: %s", department),
 			})
+			return
+		} else {
+			log.Fatalln(err.Error())
 			return
 		}
 	}
@@ -142,6 +146,9 @@ func UpdateStudent(context *gin.Context) {
 				"updated_id": nil,
 				"message": fmt.Sprintf("Invalid department id: %s", departmentId),
 			})
+			return
+		} else {
+			log.Fatalln(err.Error())
 			return
 		}
 	}
