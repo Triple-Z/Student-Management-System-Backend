@@ -42,6 +42,12 @@ $ cd Student-Management-System-Backend/
 $ go run main.go
 ```
 
+> 需要更改本地数据库配置信息，位于 [app/mysql.go:10](app/mysql.go)。
+> 配置格式(若数据库用户名为 `root`，数据库密码为 `password`，数据库地址为 `127.0.0.1`，数据库端口为 `3306` )：
+> ```
+> root:password@tcp(127.0.0.1:3306)/?parseTime=true&charset=utf8
+> ```
+
 ## API Reference
 
 API Root: http://localhost:3000
