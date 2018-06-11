@@ -30,4 +30,3 @@ func db_init() *sql.DB {
 
 	return db
 }
-

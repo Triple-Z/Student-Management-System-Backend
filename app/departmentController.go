@@ -2,23 +2,22 @@ package app
 
 import (
 	"database/sql"
-	"time"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"fmt"
+	"time"
 )
 
 type Department struct {
-	Id sql.NullInt64
-	Name sql.NullString
-	Create_date time.Time
+	Id           sql.NullInt64
+	Name         sql.NullString
+	Create_date  time.Time
 	Last_updated time.Time
 }
 
-
 func FetchAllDepartments(c *gin.Context) {
 	var (
-		department Department
+		department  Department
 		departments []Department
 	)
 
@@ -33,21 +32,20 @@ func FetchAllDepartments(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": departments,
-		"count": len(departments),
+		"data":   departments,
+		"count":  len(departments),
 		"status": "ok",
 	})
 }
-
 
 func CreateDepartment(c *gin.Context) {
 	name := c.PostForm("name")
 
 	if name == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "failed",
+			"status":  "failed",
 			"message": "Validation failed",
-			"new_id": nil,
+			"new_id":  nil,
 		})
 		return
 	}
@@ -68,7 +66,6 @@ func CreateDepartment(c *gin.Context) {
 	})
 }
 
-
 func FetchSingleDepartment(c *gin.Context) {
 	var result gin.H
 
@@ -83,18 +80,17 @@ func FetchSingleDepartment(c *gin.Context) {
 	if checkError(err) {
 		result = gin.H{
 			"status": "failed",
-			"data": nil,
+			"data":   nil,
 		}
 	} else {
 		result = gin.H{
 			"status": "ok",
-			"data": department,
+			"data":   department,
 		}
 	}
 
 	c.JSON(http.StatusOK, result)
 }
-
 
 func UpdateDeprtment(c *gin.Context) {
 	id := c.Params.ByName("id")
@@ -103,9 +99,9 @@ func UpdateDeprtment(c *gin.Context) {
 
 	if name == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "failed",
+			"status":  "failed",
 			"message": "Validation failed",
-			"new_id": nil,
+			"new_id":  nil,
 		})
 		return
 	}
@@ -118,12 +114,11 @@ func UpdateDeprtment(c *gin.Context) {
 	checkError(err)
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+		"status":     "ok",
 		"updated_id": id,
 	})
 
 }
-
 
 func DeleteDepartment(c *gin.Context) {
 
@@ -141,9 +136,9 @@ func DeleteDepartment(c *gin.Context) {
 
 	if count == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
-			"status": "failed",
+			"status":        "failed",
 			"rows_affected": nil,
-			"message": fmt.Sprintf("Cannot find this department by id: %s", id),
+			"message":       fmt.Sprintf("Cannot find this department by id: %s", id),
 		})
 	} else {
 		c.JSON(http.StatusNoContent, gin.H{})
